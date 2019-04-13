@@ -1,13 +1,22 @@
+#include "DHT.h"
 #include <Wire.h>
 #include "SSD1306Wire.h"
 
-SSD1306Wire display(0x3c, D1, D2);
+#define LED D4
+
+DHT dht;
+SSD1306Wire display(0x3c, D2, D3);
 
 void setup() {
+  dht.setup(D1);
   display.init();
+  
+  pinMode(LED, OUTPUT);
 }
 
-void drawProgressBar() {
+void drawProgressBar(int time) {
+  int wait = (time / 100);
+
   for (int counter = 0; counter <= 100; counter++) {
     display.clear();
     display.setFont(ArialMT_Plain_16);
@@ -15,24 +24,36 @@ void drawProgressBar() {
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.drawString(64, 10, String(counter) + "%");
     display.display();
-    delay(20);
+    delay(wait);
   }
 }
 
-void drawTemperature(int value) {
+void drawSensorValue(float value, String caracter) {
   display.clear();
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_24);
-  display.drawString(64, 15, String(value) + " °C");
+  display.drawString(64, 15, String(value, 0) + caracter);
   display.display();
 }
 
-int getActualTemperature() {
-  return 24;
+void checkLimitValue(int value, int maximum) {
+  if (value >= maximum) {
+    digitalWrite(LED, HIGH);
+  } else {
+    digitalWrite(LED, LOW);
+  }
 }
 
 void loop() {
-  drawProgressBar();
-  drawTemperature(getActualTemperature());
-  delay(20000);
+  drawProgressBar(dht.getMinimumSamplingPeriod());
+  
+  float temperature = dht.getTemperature();
+  float humidity = dht.getHumidity();
+
+  checkLimitValue(temperature, 30);
+
+  drawSensorValue(temperature, " °C");
+  delay(10000);
+  drawSensorValue(humidity, " %");
+  delay(5000);
 }
