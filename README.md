@@ -2,7 +2,9 @@
 
 This is a very simple project using DHT11/DHT22 sensor sending temperature and humidity to middleware platform and also showing the data an OLED IC2 screen:
 
-![architecture](./docs/images/indoor.jpg)
+<p align="center">
+<img src="./docs/images/indoor.jpg" alt="drawing"/>
+</p>
 
 The development enviroment used was the [PlaftormIO](https://docs.platformio.org/en/latest/), a cross-platform, cross-architecture, multiple framework, professional tool for embedded systems engineers and for software developers who write applications for embedded products. Without going too deep into PlatformIO implementation details, work cycle of the project developed using PlatformIO is as follows:
 
